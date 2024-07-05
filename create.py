@@ -3,12 +3,11 @@ import sys
 import shutil
 
 def create(args, prog_dir) -> bool:
-    try:
         name, folder = args[0], args[1]
+        dest = prog_dir + "/samples/" + name
         
-        os.mkdir(prog_dir + "/samples/" + name)
-        shutil.copytree(folder, prog_dir + "/samples/" + name)
-        print("Created " + name + " sample in " + prog_dir + "/samples/" + name)
+        if os.path.exists(dest) : os.rmdir(dest)
+        shutil.copytree(folder, dest)
+        print("Created " + name + " sample from " + folder + " to " + dest)
 
         return True
-    except: return False

@@ -17,7 +17,7 @@ def make(args, prog_dir) -> bool:
             return False
 
         shutil.copytree(folder, target)
-        print("Loaded sample " + name + " in " + target)
+        print("Loaded sample " + folder + " in " + target)
 
         return True
     except: return False

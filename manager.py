@@ -19,6 +19,10 @@ args = sys.argv[1:]
 prog_dir = "/".join(os.path.abspath(__file__).replace("\\", "/").split("/")[:-1])
 samples_folder = prog_dir + "/samples/"
 
+def clean(args):
+    for i in range(len(args)):
+        args[i] = args[i].replace("\\", "/").replace('"', "")
+
 def setup():
     os.mkdir(prog_dir + "/samples/")
     init_options(prog_dir)
@@ -47,6 +51,8 @@ def show_usage():
 
 
 if __name__ == "__main__":
+
+    clean(args)
 
     if not os.path.exists(prog_dir + "/samples/"):
         if not setup() : fatal_error()
