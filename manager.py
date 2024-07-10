@@ -58,10 +58,11 @@ if __name__ == "__main__":
         if not setup() : fatal_error("FATAL ERROR : COULD NOT CREATE FOLDER" + samples_folder)
     if not options_exists(prog_dir) :
         init_options(prog_dir)
-        verif_options()
-        save_options(prog_dir)
     else:
         if not load_options(prog_dir) : fatal_error("FATAL ERROR : COULD NOT LOAD OPTIONS")
+
+    verif_options()
+    save_options(prog_dir)
 
     if len(args) == 0:
         show_usage()
@@ -75,9 +76,9 @@ if __name__ == "__main__":
         create(args[1:], prog_dir)
     elif args[0].lower() == "make":
         make(args[1:], prog_dir)
-    elif args[0] in ("options", "option", "opt") and len(args) == 4:
-        options[args[2]] = args[3]
-        save_options()
+    elif args[0] in ("options", "option", "opt") and len(args) == 3:
+        options[args[1]] = args[2]
+        save_options(prog_dir)
     else:
         show_usage()
 

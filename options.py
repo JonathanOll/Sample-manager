@@ -12,9 +12,11 @@ def init_options(prog_dir):
 
 def verif_options():
     if "open_vscode" not in options : options["open_vscode"] = True
+    if "connect_to_git" not in options : options["connect_to_git"] = True
+    if "git_main_branch" not in options : options["git_main_branch"] = "main"
 
 def save_options(prog_dir):
-    open(prog_dir + "/options/json").write(dumps(options))
+    open(prog_dir + "/options.json", "w").write(dumps(options))
 
 def load_options(prog_dir):
     try:
