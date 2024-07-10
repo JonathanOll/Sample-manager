@@ -4,7 +4,7 @@ from json import load, dump
 
 from create import create
 from make import make
-from options import show_options, options, init_options, load_options
+from options import show_options, options, init_options, load_options, options_exists, verif_options, save_options
 
 
 # sample create xxxx ./  : crée/met à jour un template du nom de xxxx, en se basant sur le dossier ./
@@ -25,7 +25,6 @@ def clean(args):
 
 def setup():
     os.mkdir(prog_dir + "/samples/")
-    init_options(prog_dir)
     return True
 
 def list_samples() -> list:
@@ -37,8 +36,8 @@ def list_samples() -> list:
 def exists(sample : str) -> bool:
     return sample.lower() in list_samples()
 
-def fatal_error():
-    print("FATAL ERROR : COULD NOT CREATE FOLDER" + samples_folder)
+def fatal_error(error):
+    print(error)
 
 def show_usage():
     print("Usage : ")
@@ -46,6 +45,7 @@ def show_usage():
     print("sample | sample list : liste les templates existances")
     print("sample make xxxx : crée dans le dossier courant un projet basé sur le template xxxx")
     print("sample remove xxxx : supprime le template xxxx")
+    print("sample options : liste les options")
     print("sample options xxxx abcd : donne la valeur abcd à l'option xxxx")
 
 
@@ -55,13 +55,17 @@ if __name__ == "__main__":
     clean(args)
 
     if not os.path.exists(prog_dir + "/samples/"):
-        if not setup() : fatal_error()
+        if not setup() : fatal_error("FATAL ERROR : COULD NOT CREATE FOLDER" + samples_folder)
+    if not options_exists(prog_dir) :
+        init_options(prog_dir)
+        verif_options()
+        save_options(prog_dir)
     else:
-        if not load_options(prog_dir) : fatal_error()
+        if not load_options(prog_dir) : fatal_error("FATAL ERROR : COULD NOT LOAD OPTIONS")
 
     if len(args) == 0:
         show_usage()
-    elif args[0].lower() in ("options", "option", "opt"):
+    elif len(args) == 1 and args[0].lower() in ("options", "option", "opt"):
         show_options()
     elif args[0].lower() == "list":
         print("Existing samples : ")
@@ -71,6 +75,9 @@ if __name__ == "__main__":
         create(args[1:], prog_dir)
     elif args[0].lower() == "make":
         make(args[1:], prog_dir)
+    elif args[0] in ("options", "option", "opt") and len(args) == 4:
+        options[args[2]] = args[3]
+        save_options()
     else:
         show_usage()
 
