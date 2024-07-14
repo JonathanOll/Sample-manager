@@ -2,8 +2,8 @@ from command import *
 
 
 class CreateCommand(Command):
-        def __init__(self, prog_dir):
-                super().__init__(prog_dir)
+        def __init__(self, prog_dir, options):
+                super().__init__(prog_dir, options)
                 self.name = "create"
                 self.aliases = ["create", "cr", "c"]
         

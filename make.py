@@ -1,11 +1,10 @@
 from command import *
-from options import options
 
 URL_REGEX = re.compile(r"(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?")
 
 class MakeCommand(Command):
-    def __init__(self, prog_dir):
-        super().__init__(prog_dir)
+    def __init__(self, prog_dir, options):
+        super().__init__(prog_dir, options)
         self.name = "make"
         self.aliases = ["make", "m"]
 
@@ -32,7 +31,7 @@ class MakeCommand(Command):
                 return False
 
 
-            if options.get("connect_to_git"):
+            if self.options.get("connect_to_git"):
                 print("(leave blank if you don't want to connect to a git)")
                 rep = input("Git rep. link  : ")
 
@@ -44,7 +43,7 @@ class MakeCommand(Command):
             shutil.copytree(folder, target, dirs_exist_ok=True)
             print("Loaded sample " + folder + " in " + target)
 
-            if options.get("open_vscode"):
+            if self.options.get("open_vscode"):
                 os.system("code " + target)
 
             print("Done!")
