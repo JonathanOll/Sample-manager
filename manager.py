@@ -2,9 +2,9 @@ import sys
 import os
 from json import load, dump
 
-from create import create
-from make import make
-from options import show_options, options, init_options, load_options, options_exists, verif_options, save_options
+from create import CreateCommand
+from make import MakeCommand
+from options import OptionCommand
 
 
 # sample create xxxx ./  : crée/met à jour un template du nom de xxxx, en se basant sur le dossier ./
@@ -18,6 +18,8 @@ from options import show_options, options, init_options, load_options, options_e
 args = sys.argv[1:]
 prog_dir = "/".join(os.path.abspath(__file__).replace("\\", "/").split("/")[:-1])
 samples_folder = prog_dir + "/samples/"
+
+commands = [MakeCommand(prog_dir), CreateCommand(prog_dir)]
 
 def clean(args):
     for i in range(len(args)):
@@ -36,8 +38,8 @@ def list_samples() -> list:
 def exists(sample : str) -> bool:
     return sample.lower() in list_samples()
 
-def fatal_error(error):
-    print(error)
+def fatal_error(error=""):
+    print("FATAL ERROR : " + error)
 
 def show_usage():
     print("Usage : ")
@@ -54,6 +56,8 @@ if __name__ == "__main__":
 
     clean(args)
 
+    
+
     if not os.path.exists(prog_dir + "/samples/"):
         if not setup() : fatal_error("FATAL ERROR : COULD NOT CREATE FOLDER" + samples_folder)
     if not options_exists(prog_dir) :
@@ -66,7 +70,19 @@ if __name__ == "__main__":
 
     if len(args) == 0:
         show_usage()
-    elif len(args) == 1 and args[0].lower() in ("options", "option", "opt"):
+        sys.exit()
+
+    for cmd in commands:
+        if args[0].lower() in cmd.aliases:
+            if not cmd.run(args[1:]):
+                fatal_error()
+                sys.exit()
+
+
+
+
+    
+    if len(args) == 1 and args[0].lower() in ("options", "option", "opt"):
         show_options()
     elif args[0].lower() == "list":
         print("Existing samples : ")
@@ -74,8 +90,6 @@ if __name__ == "__main__":
             print("\t - " + i)
     elif args[0].lower() == "create":
         create(args[1:], prog_dir)
-    elif args[0].lower() == "make":
-        make(args[1:], prog_dir)
     elif args[0] in ("options", "option", "opt") and len(args) == 3:
         options[args[1]] = args[2]
         save_options(prog_dir)

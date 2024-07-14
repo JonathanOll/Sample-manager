@@ -1,44 +1,53 @@
-import sys
-import os
-import shutil
-import re
+from command import *
 from options import options
 
 URL_REGEX = re.compile(r"(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?")
 
-def make(args, prog_dir) -> bool:
-    try:
-        name = args[0]
+class MakeCommand(Command):
+    def __init__(self, prog_dir):
+        super().__init__(prog_dir)
+        self.name = "make"
+        self.aliases = ["make", "m"]
 
-        target = "./"
-        if len(args) > 1 : target = args[1]
-        folder = prog_dir + "/samples/" + name
+    def run(self, args):
+        super().run(args)
 
-        if os.path.exists(target):
-            print(target + " already exists")
-            return False
-        
-        if not os.path.exists(folder) :
-            print("No such sample : " + name)
+        if not (1 <= len(args) <= 2) :
+            print("Incorrect argument count")
             return False
 
+        try:
+            name = args[0]
 
-        if options.get("connect_to_git"):
-            print("(leave blank if you don't want to connect to a git)")
-            rep = input("Git rep. link  : ")
+            target = "./" + name + "/"
+            if len(args) > 1 : target = args[1]
+            folder = self.prog_dir + "/samples/" + name
 
-            if URL_REGEX.match(rep) :
-                os.system("git clone " + rep + " " + target)
-        print("Git repository initialized")
-        
+            if os.path.exists(target):
+                print(target + " already exists")
+                return False
+            
+            if not os.path.exists(folder) :
+                print("No such sample : " + name)
+                return False
 
-        shutil.copytree(folder, target, dirs_exist_ok=True)
-        print("Loaded sample " + folder + " in " + target)
 
-        if options.get("open_vscode"):
-            os.system("code " + target)
+            if options.get("connect_to_git"):
+                print("(leave blank if you don't want to connect to a git)")
+                rep = input("Git rep. link  : ")
 
-        print("Done!")
-        return True
-    except: return False
+                if URL_REGEX.match(rep) :
+                    os.system("git clone " + rep + " " + target)
+            print("Git repository initialized")
+            
+
+            shutil.copytree(folder, target, dirs_exist_ok=True)
+            print("Loaded sample " + folder + " in " + target)
+
+            if options.get("open_vscode"):
+                os.system("code " + target)
+
+            print("Done!")
+            return True
+        except: return False
 

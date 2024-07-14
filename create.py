@@ -1,13 +1,26 @@
-import os
-import sys
-import shutil
+from command import *
 
-def create(args, prog_dir) -> bool:
-        name, folder = args[0], args[1]
-        dest = prog_dir + "/samples/" + name
+
+class CreateCommand(Command):
+        def __init__(self, prog_dir):
+                super().__init__(prog_dir)
+                self.name = "create"
+                self.aliases = ["create", "cr", "c"]
         
-        if os.path.exists(dest) : os.rmdir(dest)
-        shutil.copytree(folder, dest)
-        print("Created " + name + " sample from " + folder + " to " + dest)
+        def run(self, args):
+                super().run(args)
 
-        return True
+                if not (len(args) == 2) :
+                        print("Incorrect argument count")
+                        return False
+
+                try:
+                        name, folder = args[0], args[1]
+                        dest = self.prog_dir + "/samples/" + name
+                        
+                        if os.path.exists(dest) : os.rmdir(dest)
+                        shutil.copytree(folder, dest)
+                        print("Created " + name + " sample from " + folder + " to " + dest)
+
+                        return True
+                except: return False
